@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SystemOne UI</title>
+<style>
+:root {
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --text: #1c1f24;
+  --muted: #646b76;
+  --border: #d9dde3;
+  --input: #ffffff;
+  --accent: #2f6fdf;
+  --accent-text: #ffffff;
+  --track: #e8ebef;
+  --bar: #a9b2bf;
+  --danger: #c73636;
+  --danger-bg: #fdecec;
+  --warn: #9a6400;
+  --ok: #217a3c;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171b;
+    --panel: #1d2126;
+    --text: #e6e9ed;
+    --muted: #9aa3ae;
+    --border: #343a42;
+    --input: #15181c;
+    --accent: #6a9cf5;
+    --accent-text: #0e1420;
+    --track: #2b3037;
+    --bar: #5c6673;
+    --danger: #f07c7c;
+    --danger-bg: #3a1f22;
+    --warn: #e0b04c;
+    --ok: #5cc37c;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+}
+header {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--panel);
+}
+header h1 { font-size: 16px; margin: 0; }
+#status { font-size: 13px; color: var(--muted); }
+header .spacer { flex: 1; }
+#status.ok { color: var(--ok); }
+#status.warn { color: var(--warn); }
+#status.err { color: var(--danger); }
+main {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px; padding: 16px; max-width: 1400px; margin: 0 auto;
+}
+@media (max-width: 799px) { main { grid-template-columns: minmax(0, 1fr); } }
+section {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  padding: 14px; margin-bottom: 16px; min-width: 0;
+}
+section h2 { font-size: 14px; margin: 0 0 10px; }
+label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+input, select, textarea, button { font: inherit; color: inherit; }
+input[type=text], select, textarea {
+  width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--input);
+}
+textarea { resize: vertical; min-height: 120px; font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+.invalid { border-color: var(--danger) !important; outline: 1px solid var(--danger); }
+button {
+  padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--panel); cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+button.small { padding: 2px 8px; font-size: 12px; }
+button:disabled { opacity: .5; cursor: default; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 480px) { .row2 { grid-template-columns: 1fr; } }
+.toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; }
+.seg button.on { background: var(--accent); color: var(--accent-text); }
+.spacer { flex: 1; }
+.muted { color: var(--muted); font-size: 12px; }
+.banner { background: var(--danger-bg); color: var(--danger); padding: 10px 16px; font-size: 13px; }
+.qcard { border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 10px; }
+.qhead { display: grid; grid-template-columns: 1fr 120px auto; gap: 8px; align-items: end; margin-bottom: 8px; }
+@media (max-width: 480px) { .qhead { grid-template-columns: 1fr 1fr; } .qhead > :last-child { grid-column: span 2; justify-self: end; } }
+.qcard .field { margin-bottom: 8px; }
+.opt { display: grid; grid-template-columns: 140px 1fr auto; gap: 6px; margin-bottom: 6px; }
+.lvl { display: grid; grid-template-columns: 24px 1fr auto auto auto; gap: 6px; align-items: center; margin-bottom: 6px; }
+@media (max-width: 480px) { .opt { grid-template-columns: 1fr auto; margin-bottom: 10px; } .opt > :first-child { grid-column: 1 / -1; } }
+.idx { color: var(--muted); font-size: 12px; text-align: right; }
+#errors { color: var(--danger); font-size: 13px; margin: 8px 0 0; padding-left: 18px; }
+#errors:empty { display: none; }
+.actions { display: flex; gap: 8px; align-items: center; }
+pre {
+  margin: 8px 0 0; padding: 8px; background: var(--input); border: 1px solid var(--border); border-radius: 6px;
+  overflow: auto; max-height: 260px; font-size: 12px; white-space: pre-wrap; word-break: break-all;
+}
+.meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+.meta b { color: var(--text); font-weight: 600; }
+.answer { border-top: 1px solid var(--border); padding: 10px 0; }
+.answer:first-of-type { border-top: 0; padding-top: 0; }
+.ahead { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; margin-bottom: 6px; }
+.ahead .key { font-family: ui-monospace, Menlo, monospace; font-weight: 600; }
+.ahead .type { font-size: 11px; padding: 0 6px; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); }
+.ahead .conf { margin-left: auto; font-size: 13px; color: var(--muted); }
+.ahead .conf b { color: var(--text); }
+.instr { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.bar { display: grid; grid-template-columns: minmax(80px, 38%) 1fr 56px; gap: 8px; align-items: center; margin: 3px 0; }
+.bar .lbl { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.bar .lbl small { color: var(--muted); margin-left: 6px; }
+.track { height: 14px; background: var(--track); border-radius: 3px; overflow: hidden; }
+.fill { height: 100%; background: var(--bar); }
+.bar.top .fill { background: var(--accent); }
+.bar.top .lbl { font-weight: 600; }
+.pct { text-align: right; font-variant-numeric: tabular-nums; font-size: 13px; }
+.summary { font-size: 13px; margin-bottom: 6px; }
+.error { background: var(--danger-bg); color: var(--danger); border-radius: 6px; padding: 10px 12px; white-space: pre-wrap; }
+#history { list-style: none; margin: 0; padding: 0; }
+#history li button {
+  display: block; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--border); border-radius: 0;
+  padding: 8px 4px; background: transparent;
+}
+#history li:first-child button { border-top: 0; }
+#history li button:hover { background: var(--track); }
+#history .h1 { display: flex; gap: 8px; font-size: 12px; color: var(--muted); }
+#history .h2 { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#history .h3 { font-size: 12px; font-family: ui-monospace, Menlo, monospace; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+</style>
+<body>
+<div id="fileBanner" class="banner" data-i18n-html="fileBanner" hidden></div>
+<header>
+  <h1>SystemOne UI</h1>
+  <span id="status"></span>
+  <span class="spacer"></span>
+  <div class="seg" id="lang" aria-label="Language">
+    <button data-lang="ja">日本語</button>
+    <button data-lang="en">English</button>
+  </div>
+</header>
+<main>
+  <div>
+    <section>
+      <h2 data-i18n="connTitle"></h2>
+      <div class="row2">
+        <div>
+          <label for="baseUrl" data-i18n="baseUrl"></label>
+          <input id="baseUrl" type="text" spellcheck="false">
+        </div>
+        <div>
+          <label for="model" data-i18n="model"></label>
+          <select id="model"></select>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 data-i18n="presetsTitle"></h2>
+      <div class="toolbar" id="presets"></div>
+    </section>
+
+    <section>
+      <div class="toolbar">
+        <h2 style="margin:0" data-i18n="stateTitle"></h2>
+        <span class="spacer"></span>
+        <div class="seg" id="stateMode">
+          <button data-mode="text" data-i18n="modeText"></button>
+          <button data-mode="json">JSON</button>
+        </div>
+      </div>
+      <textarea id="state" spellcheck="false"></textarea>
+    </section>
+
+    <section>
+      <div class="toolbar">
+        <h2 style="margin:0" data-i18n="schemaTitle"></h2>
+        <span class="spacer"></span>
+        <div class="seg" id="schemaTab">
+          <button data-tab="form" data-i18n="tabForm"></button>
+          <button data-tab="json">JSON</button>
+        </div>
+      </div>
+      <div id="formView">
+        <div id="questions"></div>
+        <button id="addQ" data-i18n="addQ"></button>
+      </div>
+      <div id="jsonView" hidden>
+        <textarea id="schemaJson" spellcheck="false" style="min-height:260px"></textarea>
+      </div>
+      <ul id="errors"></ul>
+    </section>
+
+    <section>
+      <div class="actions">
+        <button id="run" class="primary" data-i18n="run"></button>
+        <button id="cancel" data-i18n="cancel" hidden></button>
+      </div>
+      <details style="margin-top:10px">
+        <summary class="muted" data-i18n="previewSummary"></summary>
+        <pre id="preview"></pre>
+        <button id="copy" class="small" style="margin-top:6px" data-i18n="copy"></button>
+      </details>
+    </section>
+  </div>
+
+  <div>
+    <section>
+      <h2 data-i18n="resultTitle"></h2>
+      <div id="result"></div>
+    </section>
+    <section>
+      <div class="toolbar">
+        <h2 style="margin:0" data-i18n="historyTitle"></h2>
+        <span class="spacer"></span>
+        <button id="clearHistory" class="small" data-i18n="clearHistory"></button>
+      </div>
+      <ul id="history"></ul>
+      <p id="historyNote" class="muted" data-i18n="historySaveFailed" hidden></p>
+    </section>
+  </div>
+</main>
+
+<script>
+'use strict';
+
+const MIN_VERSION = '0.35.1';
+const HISTORY_MAX = 20;
+const KEY_RE = /^[A-Za-z0-9_]+$/;
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pct = (p) => (p * 100).toFixed(1) + '%';
+
+const store = {
+  get(key, fallback) {
+    try {
+      const v = localStorage.getItem(key);
+      return v == null ? fallback : JSON.parse(v);
+    } catch { return fallback; }
+  },
+  set(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; }
+  },
+};
+
+// ---------- 文言 (日本語 / English) ----------
+
+const I18N = {
+  ja: {
+    fileBanner: 'file:// で開いているため Ollama に接続できません。このフォルダで <code>python3 -m http.server 8000</code> などを実行し、<code>http://localhost:8000</code> を開いてください。',
+    connTitle: '接続', baseUrl: '接続先 URL', model: 'モデル',
+    modelsNone: '(判断モデルがありません)', modelsUnknown: '(未接続)',
+    presetsTitle: 'プリセット', stateTitle: '状態', modeText: 'テキスト',
+    statePhText: '判定したい状態をテキストで入力', statePhJson: '{ "ticket": "...", "customer": { ... } }',
+    schemaTitle: '質問スキーマ', tabForm: 'フォーム', addQ: '＋ 質問を追加', questionsEmpty: '質問がありません。',
+    qKey: '質問キー', qType: 'タイプ', delQ: '質問を削除', qInstr: '質問文', qInstrPh: '例: この問い合わせは緊急か?',
+    choicesLabel: '選択肢 (キー / 説明)', choiceKeyPh: 'キー (例: billing)', descPh: '説明', addChoice: '＋ 選択肢',
+    levelsLabel: '基準 (上から 0, 1, 2… の順)', levelPh: '基準の説明', addLevel: '＋ 基準',
+    noulLabel: '真偽の説明 (任意・両方空なら省略)', truePh: '真の場合', falsePh: '偽の場合',
+    remove: '削除', up: '上へ', down: '下へ',
+    run: '判定する', cancel: '中止', previewSummary: '送信リクエスト (curl)', previewFail: '(プレビューできません: {m})',
+    copy: 'コピー', copied: 'コピーしました', copyFailed: 'コピーできませんでした',
+    resultTitle: '結果', resultEmpty: 'プリセットを選ぶか入力して「判定する」を押してください。',
+    running: '{model} で判定中… (初回はモデルの読み込みに時間がかかります)',
+    historyTitle: '履歴', clearHistory: 'すべて削除', historyEmpty: 'まだ履歴はありません。', historySaveFailed: '履歴を保存できませんでした。',
+    checking: '接続を確認中…', connOk: '接続OK · Ollama {v}', connOld: '接続OK · Ollama {v} (SystemOne には {min} 以上が必要です)',
+    connFailShort: '{url} に接続できません',
+    // 検証
+    qCount: '質問は 1〜64 問にしてください (現在 {n} 問)。',
+    keyFormat: '「{q}」: 質問キーは英数字と _ だけで入力してください。', keyDup: '「{q}」: 質問キーが重複しています。',
+    instrEmpty: '「{q}」: 質問文を入力してください。', nth: '{n} 問目',
+    choiceCount: '「{q}」: 選択肢は 2〜26 個にしてください。', choiceKeyEmpty: '「{q}」: 選択肢 {n} のキーが空です。',
+    choiceKeyDup: '「{q}」: 選択肢キー「{k}」が重複しています。', choiceDescEmpty: '「{q}」: 選択肢 {n} の説明が空です。',
+    levelCount: '「{q}」: 基準は 2〜26 段階にしてください。', levelEmpty: '「{q}」: 基準 {n} が空です。',
+    noulPair: '「{q}」: 真偽の説明は両方入力するか、両方空にしてください。',
+    noModel: '判断モデルが選択されていません。ターミナルで ollama pull clef-flash などを実行して取得してください。',
+    jsonSyntax: 'JSON の構文エラー: {m}', stateJson: '状態の JSON が不正です: {m}',
+    qsNotObject: 'questions は { "キー": {...} } 形式のオブジェクトにしてください。',
+    qNotObject: '「{q}」の値がオブジェクトではありません。',
+    qBadType: '「{q}」の type は noul / choice / score のいずれかにしてください。',
+    qBadInstr: '「{q}」の instructions (質問文) が文字列ではありません。',
+    choiceCriteria: '「{q}」(choice) の criteria は { "選択肢キー": "説明" } のオブジェクトにしてください。',
+    scoreCriteria: '「{q}」(score) の criteria は説明文の配列にしてください。',
+    noulCriteria: '「{q}」(noul) の criteria は { "true": "...", "false": "..." } にしてください。',
+    // 通信エラー
+    aborted: '中止しました。', unexpected: '予期しないエラーです: {m}', badShape: 'レスポンスの形式が想定と異なります:\n{m}',
+    modelNotFound: 'モデル「{model}」が見つかりません。ターミナルで次を実行して取得してください:\n  ollama pull {model}\n\n(サーバーの応答: {m})',
+    badRequest: 'リクエストが不正です (400): {m}', serverError: 'Ollama の内部エラーです ({s}): {m}', httpOther: 'エラー ({s}): {m}',
+    connFail: 'Ollama ({url}) に接続できません。\n・Ollama が起動しているか確認してください (ollama serve)。\n・接続先 URL が正しいか確認してください。',
+    connFailFile: '\n・file:// で開いていると接続できません。python3 -m http.server 8000 などで開いてください。',
+    connFailCors: '\n・localhost 以外のホストに接続する場合は、そのホストの Ollama で OLLAMA_ORIGINS の設定が必要です。',
+    // 結果
+    elapsed: '応答時間', confidence: '信頼度', confNone: 'なし', confNoneNoul: 'なし (noul は返しません)',
+    noAnswer: '回答がありません。', expected: '期待値', nearest: '最も近い基準: {l}', true: '真', false: '偽',
+  },
+  en: {
+    fileBanner: 'Opened via file://, so Ollama cannot be reached. Run e.g. <code>python3 -m http.server 8000</code> in this folder and open <code>http://localhost:8000</code>.',
+    connTitle: 'Connection', baseUrl: 'Ollama URL', model: 'Model',
+    modelsNone: '(no decision models)', modelsUnknown: '(not connected)',
+    presetsTitle: 'Presets', stateTitle: 'State', modeText: 'Text',
+    statePhText: 'Describe the state to judge', statePhJson: '{ "ticket": "...", "customer": { ... } }',
+    schemaTitle: 'Question schema', tabForm: 'Form', addQ: '+ Add question', questionsEmpty: 'No questions.',
+    qKey: 'Key', qType: 'Type', delQ: 'Remove question', qInstr: 'Question', qInstrPh: 'e.g. Is this request urgent?',
+    choicesLabel: 'Options (key / description)', choiceKeyPh: 'key (e.g. billing)', descPh: 'description', addChoice: '+ Option',
+    levelsLabel: 'Levels (top to bottom = 0, 1, 2…)', levelPh: 'level description', addLevel: '+ Level',
+    noulLabel: 'True / false descriptions (optional; omitted if both empty)', truePh: 'When true', falsePh: 'When false',
+    remove: 'Remove', up: 'Move up', down: 'Move down',
+    run: 'Judge', cancel: 'Cancel', previewSummary: 'Request (curl)', previewFail: '(Cannot preview: {m})',
+    copy: 'Copy', copied: 'Copied', copyFailed: 'Copy failed',
+    resultTitle: 'Result', resultEmpty: 'Pick a preset or fill in the inputs, then press "Judge".',
+    running: 'Judging with {model}… (the first run loads the model and may take a while)',
+    historyTitle: 'History', clearHistory: 'Clear all', historyEmpty: 'No history yet.', historySaveFailed: 'Could not save history.',
+    checking: 'Checking connection…', connOk: 'Connected · Ollama {v}', connOld: 'Connected · Ollama {v} (SystemOne needs {min} or later)',
+    connFailShort: 'Cannot reach {url}',
+    qCount: 'Use 1–64 questions (currently {n}).',
+    keyFormat: '"{q}": keys may contain only letters, digits and _.', keyDup: '"{q}": duplicate key.',
+    instrEmpty: '"{q}": enter the question text.', nth: 'question {n}',
+    choiceCount: '"{q}": use 2–26 options.', choiceKeyEmpty: '"{q}": option {n} has no key.',
+    choiceKeyDup: '"{q}": duplicate option key "{k}".', choiceDescEmpty: '"{q}": option {n} has no description.',
+    levelCount: '"{q}": use 2–26 levels.', levelEmpty: '"{q}": level {n} is empty.',
+    noulPair: '"{q}": fill in both true/false descriptions or leave both empty.',
+    noModel: 'No decision model selected. Pull one first, e.g. ollama pull clef-flash.',
+    jsonSyntax: 'JSON syntax error: {m}', stateJson: 'State JSON is invalid: {m}',
+    qsNotObject: 'questions must be an object like { "key": {...} }.',
+    qNotObject: 'The value of "{q}" is not an object.',
+    qBadType: 'The type of "{q}" must be noul, choice or score.',
+    qBadInstr: 'The instructions of "{q}" must be a string.',
+    choiceCriteria: 'criteria of "{q}" (choice) must be an object like { "option_key": "description" }.',
+    scoreCriteria: 'criteria of "{q}" (score) must be an array of descriptions.',
+    noulCriteria: 'criteria of "{q}" (noul) must be { "true": "...", "false": "..." }.',
+    aborted: 'Cancelled.', unexpected: 'Unexpected error: {m}', badShape: 'Unexpected response format:\n{m}',
+    modelNotFound: 'Model "{model}" was not found. Pull it in a terminal:\n  ollama pull {model}\n\n(Server response: {m})',
+    badRequest: 'Bad request (400): {m}', serverError: 'Ollama internal error ({s}): {m}', httpOther: 'Error ({s}): {m}',
+    connFail: 'Cannot connect to Ollama ({url}).\n- Check that Ollama is running (ollama serve).\n- Check the URL.',
+    connFailFile: '\n- Pages opened via file:// cannot connect. Serve this folder, e.g. python3 -m http.server 8000.',
+    connFailCors: '\n- For a non-localhost host, add this page\'s origin to OLLAMA_ORIGINS on that host.',
+    elapsed: 'Latency', confidence: 'Confidence', confNone: 'none', confNoneNoul: 'none (noul does not return it)',
+    noAnswer: 'No answer.', expected: 'Expected', nearest: 'nearest level: {l}', true: 'True', false: 'False',
+  },
+};
+
+let lang = 'ja';
+function t(k, p = {}) {
+  const s = I18N[lang][k] ?? I18N.ja[k] ?? k;
+  return s.replace(/\{(\w+)\}/g, (_, n) => p[n] ?? '');
+}
+// 言語を切り替えても再描画できるよう、メッセージはキーと引数で持ち回る
+class I18nError extends Error {
+  constructor(k, p) { super(k); this.k = k; this.p = p; }
+}
+
+// ---------- プリセット ----------
+
+const PRESETS = {
+  ja: [
+    {
+      name: '問い合わせのルーティング',
+      stateMode: 'text',
+      state: '先月の請求で、同じ月額料金が2回引き落とされています。重複している分を返金してもらえますか?',
+      questions: {
+        team: {
+          type: 'choice',
+          instructions: 'この問い合わせはどのチームが対応すべきか?',
+          criteria: { billing: '請求・支払い・返金', technical: '障害・エラー・設定', sales: 'プラン変更・アップグレード・見積もり', other: '上記以外' },
+        },
+      },
+    },
+    {
+      name: 'バグ報告の分類',
+      stateMode: 'json',
+      state: JSON.stringify({
+        title: 'iOS アプリでログイン後に画面が真っ白になる',
+        body: 'iOS 18.2 の iPhone 15 で、メールアドレスでログインした直後にホーム画面が表示されず白いままになります。アプリを再起動しても同じです。Android では発生しません。\n手順: 1) アプリを起動 2) メールでログイン 3) ホームが白画面',
+        app_version: '4.12.0',
+      }, null, 2),
+      questions: {
+        component: {
+          type: 'choice',
+          instructions: 'このバグはどの領域の問題か?',
+          criteria: { ios: 'iOS アプリ', android: 'Android アプリ', web: 'Web フロントエンド', backend: 'サーバー・API' },
+        },
+        has_repro_steps: { type: 'noul', instructions: '報告に再現手順が含まれているか?' },
+      },
+    },
+    {
+      name: 'レビューの満足度',
+      stateMode: 'text',
+      state: '商品自体は軽くて使いやすく、デザインも気に入っています。ただ、注文から届くまで2週間もかかり、箱も少し潰れていました。',
+      questions: {
+        satisfaction: {
+          type: 'score',
+          instructions: 'このレビューの書き手は商品にどの程度満足しているか?',
+          criteria: ['非常に不満', '不満', '普通', '満足', '非常に満足'],
+        },
+        mentions_shipping: {
+          type: 'noul',
+          instructions: 'レビューは配送について言及しているか?',
+          criteria: { true: '配送・到着・梱包について触れている', false: '配送について触れていない' },
+        },
+      },
+    },
+  ],
+  en: [
+    {
+      name: 'Support routing',
+      stateMode: 'text',
+      state: 'I was charged the same monthly fee twice last month. Could you refund the duplicate payment?',
+      questions: {
+        team: {
+          type: 'choice',
+          instructions: 'Which team should handle this request?',
+          criteria: { billing: 'Payments, invoices, and refunds', technical: 'Outages, errors, and configuration', sales: 'Plans, upgrades, and quotes', other: 'None of the above' },
+        },
+      },
+    },
+    {
+      name: 'Bug report triage',
+      stateMode: 'json',
+      state: JSON.stringify({
+        title: 'Blank white screen after login on iOS',
+        body: 'On an iPhone 15 with iOS 18.2, the home screen never appears after logging in with email; it stays white. Restarting the app does not help. Android is not affected.\nSteps: 1) Launch the app 2) Log in with email 3) Home screen is blank',
+        app_version: '4.12.0',
+      }, null, 2),
+      questions: {
+        component: {
+          type: 'choice',
+          instructions: 'Which area does this bug belong to?',
+          criteria: { ios: 'iOS app', android: 'Android app', web: 'Web frontend', backend: 'Server / API' },
+        },
+        has_repro_steps: { type: 'noul', instructions: 'Does the report include steps to reproduce?' },
+      },
+    },
+    {
+      name: 'Review satisfaction',
+      stateMode: 'text',
+      state: 'The product itself is light and easy to use, and I love the design. But it took two weeks to arrive and the box was a bit crushed.',
+      questions: {
+        satisfaction: {
+          type: 'score',
+          instructions: 'How satisfied is the reviewer with the product?',
+          criteria: ['Very dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very satisfied'],
+        },
+        mentions_shipping: {
+          type: 'noul',
+          instructions: 'Does the review mention shipping?',
+          criteria: { true: 'Mentions shipping, delivery, or packaging', false: 'Does not mention shipping' },
+        },
+      },
+    },
+  ],
+};
+
+// ---------- 状態 ----------
+
+const app = {
+  stateMode: 'text',
+  schemaTab: 'form',
+  questions: [],
+  errors: [], // [{ sel?, k, p }]
+  busy: null, // 送信中の AbortController
+  models: null, // 取得済みの decision モデル名 (未接続なら null)
+  status: { cls: '', k: 'checking', p: {} },
+  view: null, // 結果欄を現在の言語で描き直す関数
+};
+
+function newQuestion() {
+  let n = app.questions.length + 1;
+  while (app.questions.some((q) => q.key === 'q' + n)) n++;
+  return {
+    key: 'q' + n, type: 'choice', instructions: '',
+    choices: [{ key: '', desc: '' }, { key: '', desc: '' }],
+    levels: ['', ''],
+    trueDesc: '', falseDesc: '',
+  };
+}
+
+function toApiQuestions(questions) {
+  const out = {};
+  for (const q of questions) {
+    const o = { type: q.type, instructions: q.instructions };
+    if (q.type === 'choice') o.criteria = Object.fromEntries(q.choices.map((c) => [c.key, c.desc]));
+    else if (q.type === 'score') o.criteria = q.levels.slice();
+    else if (q.trueDesc || q.falseDesc) o.criteria = { true: q.trueDesc, false: q.falseDesc };
+    out[q.key] = o;
+  }
+  return out;
+}
+
+// 生 JSON → フォーム用の配列。不正なら I18nError を throw する。
+function fromApiQuestions(obj) {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) throw new I18nError('qsNotObject');
+  return Object.entries(obj).map(([key, v]) => {
+    const p = { q: key };
+    if (!v || typeof v !== 'object') throw new I18nError('qNotObject', p);
+    if (!['noul', 'choice', 'score'].includes(v.type)) throw new I18nError('qBadType', p);
+    if (typeof v.instructions !== 'string') throw new I18nError('qBadInstr', p);
+    const q = { key, type: v.type, instructions: v.instructions, choices: [], levels: [], trueDesc: '', falseDesc: '' };
+    const c = v.criteria;
+    if (v.type === 'choice') {
+      if (!c || typeof c !== 'object' || Array.isArray(c)) throw new I18nError('choiceCriteria', p);
+      q.choices = Object.entries(c).map(([k, d]) => ({ key: k, desc: String(d) }));
+    } else if (v.type === 'score') {
+      if (!Array.isArray(c)) throw new I18nError('scoreCriteria', p);
+      q.levels = c.map(String);
+    } else if (c != null) {
+      if (typeof c !== 'object' || Array.isArray(c)) throw new I18nError('noulCriteria', p);
+      q.trueDesc = String(c.true ?? '');
+      q.falseDesc = String(c.false ?? '');
+    }
+    if (!q.choices.length) q.choices = [{ key: '', desc: '' }, { key: '', desc: '' }];
+    if (!q.levels.length) q.levels = ['', ''];
+    return q;
+  });
+}
+
+// ---------- 質問フォーム ----------
+
+function renderQuestions() {
+  $('#questions').innerHTML = app.questions.map((q, qi) => {
+    let body = '';
+    if (q.type === 'choice') {
+      body = `<label>${t('choicesLabel')}</label>` + q.choices.map((c, ci) => `
+        <div class="opt">
+          <input type="text" data-f="ckey" data-ci="${ci}" value="${esc(c.key)}" placeholder="${esc(t('choiceKeyPh'))}" spellcheck="false">
+          <input type="text" data-f="cdesc" data-ci="${ci}" value="${esc(c.desc)}" placeholder="${esc(t('descPh'))}">
+          <button class="small" data-act="del-choice" data-ci="${ci}" title="${esc(t('remove'))}">×</button>
+        </div>`).join('') + `<button class="small" data-act="add-choice">${esc(t('addChoice'))}</button>`;
+    } else if (q.type === 'score') {
+      body = `<label>${t('levelsLabel')}</label>` + q.levels.map((l, li) => `
+        <div class="lvl">
+          <span class="idx">${li}</span>
+          <input type="text" data-f="level" data-li="${li}" value="${esc(l)}" placeholder="${esc(t('levelPh'))}">
+          <button class="small" data-act="up-level" data-li="${li}" title="${esc(t('up'))}" ${li === 0 ? 'disabled' : ''}>↑</button>
+          <button class="small" data-act="down-level" data-li="${li}" title="${esc(t('down'))}" ${li === q.levels.length - 1 ? 'disabled' : ''}>↓</button>
+          <button class="small" data-act="del-level" data-li="${li}" title="${esc(t('remove'))}">×</button>
+        </div>`).join('') + `<button class="small" data-act="add-level">${esc(t('addLevel'))}</button>`;
+    } else {
+      body = `<label>${t('noulLabel')}</label>
+        <div class="row2">
+          <input type="text" data-f="trueDesc" value="${esc(q.trueDesc)}" placeholder="${esc(t('truePh'))}">
+          <input type="text" data-f="falseDesc" value="${esc(q.falseDesc)}" placeholder="${esc(t('falsePh'))}">
+        </div>`;
+    }
+    return `
+      <div class="qcard" data-qi="${qi}">
+        <div class="qhead">
+          <div><label>${t('qKey')}</label><input type="text" data-f="key" value="${esc(q.key)}" spellcheck="false"></div>
+          <div><label>${t('qType')}</label>
+            <select data-f="type">
+              ${['choice', 'noul', 'score'].map((ty) => `<option value="${ty}" ${q.type === ty ? 'selected' : ''}>${ty}</option>`).join('')}
+            </select>
+          </div>
+          <button class="small" data-act="del-q">${esc(t('delQ'))}</button>
+        </div>
+        <div class="field"><label>${t('qInstr')}</label><input type="text" data-f="instructions" value="${esc(q.instructions)}" placeholder="${esc(t('qInstrPh'))}"></div>
+        ${body}
+      </div>`;
+  }).join('') || `<p class="muted">${esc(t('questionsEmpty'))}</p>`;
+}
+
+function onQuestionInput(e) {
+  const el = e.target;
+  const card = el.closest('.qcard');
+  if (!card || !el.dataset.f) return;
+  const q = app.questions[+card.dataset.qi];
+  const f = el.dataset.f;
+  el.classList.remove('invalid');
+  if (f === 'ckey') q.choices[+el.dataset.ci].key = el.value;
+  else if (f === 'cdesc') q.choices[+el.dataset.ci].desc = el.value;
+  else if (f === 'level') q.levels[+el.dataset.li] = el.value;
+  else q[f] = el.value;
+  if (f === 'type') renderQuestions();
+  updatePreview();
+}
+
+function onQuestionClick(e) {
+  const btn = e.target.closest('button[data-act]');
+  if (!btn) return;
+  const q = app.questions[+btn.closest('.qcard').dataset.qi];
+  const ci = +btn.dataset.ci, li = +btn.dataset.li;
+  const swap = (a, i, j) => { [a[i], a[j]] = [a[j], a[i]]; };
+  switch (btn.dataset.act) {
+    case 'del-q': app.questions.splice(app.questions.indexOf(q), 1); break;
+    case 'add-choice': q.choices.push({ key: '', desc: '' }); break;
+    case 'del-choice': q.choices.splice(ci, 1); break;
+    case 'add-level': q.levels.push(''); break;
+    case 'del-level': q.levels.splice(li, 1); break;
+    case 'up-level': swap(q.levels, li, li - 1); break;
+    case 'down-level': swap(q.levels, li, li + 1); break;
+  }
+  renderQuestions();
+  updatePreview();
+}
+
+// 送信前の検証。エラーは { sel, k, p } の配列 (sel は赤枠を付ける要素)。
+function validate() {
+  const errs = [];
+  const card = (qi) => `.qcard[data-qi="${qi}"]`;
+  const qs = app.questions;
+  if (!$('#model').value) errs.push({ k: 'noModel' });
+  if (qs.length < 1 || qs.length > 64) errs.push({ k: 'qCount', p: { n: qs.length } });
+  const seen = new Set();
+  qs.forEach((q, qi) => {
+    const name = q.key || t('nth', { n: qi + 1 });
+    const err = (sel, k, p = {}) => errs.push({ sel: sel && `${card(qi)} ${sel}`, k, p: { q: name, ...p } });
+    if (!KEY_RE.test(q.key)) err('[data-f="key"]', 'keyFormat');
+    else if (seen.has(q.key)) err('[data-f="key"]', 'keyDup');
+    seen.add(q.key);
+    if (!q.instructions.trim()) err('[data-f="instructions"]', 'instrEmpty');
+    if (q.type === 'choice') {
+      if (q.choices.length < 2 || q.choices.length > 26) err(null, 'choiceCount');
+      const ck = new Set();
+      q.choices.forEach((c, ci) => {
+        const sel = (f) => `[data-f="${f}"][data-ci="${ci}"]`;
+        if (!c.key.trim()) err(sel('ckey'), 'choiceKeyEmpty', { n: ci + 1 });
+        else if (ck.has(c.key)) err(sel('ckey'), 'choiceKeyDup', { k: c.key });
+        ck.add(c.key);
+        if (!c.desc.trim()) err(sel('cdesc'), 'choiceDescEmpty', { n: ci + 1 });
+      });
+    } else if (q.type === 'score') {
+      if (q.levels.length < 2 || q.levels.length > 26) err(null, 'levelCount');
+      q.levels.forEach((l, li) => {
+        if (!l.trim()) err(`[data-f="level"][data-li="${li}"]`, 'levelEmpty', { n: li });
+      });
+    } else if (!q.trueDesc.trim() !== !q.falseDesc.trim()) {
+      err(`[data-f="${q.trueDesc.trim() ? 'falseDesc' : 'trueDesc'}"]`, 'noulPair');
+    }
+  });
+  return errs;
+}
+
+function showErrors(errs) {
+  app.errors = errs;
+  renderErrors();
+}
+
+function renderErrors() {
+  document.querySelectorAll('#questions .invalid').forEach((el) => el.classList.remove('invalid'));
+  $('#errors').innerHTML = app.errors.map((e) => `<li>${esc(t(e.k, e.p))}</li>`).join('');
+  for (const e of app.errors) if (e.sel) document.querySelector(e.sel)?.classList.add('invalid');
+}
+
+// ---------- タブ・モード切替 ----------
+
+function setStateMode(mode) {
+  app.stateMode = mode;
+  document.querySelectorAll('#stateMode button').forEach((b) => b.classList.toggle('on', b.dataset.mode === mode));
+  $('#state').placeholder = t(mode === 'json' ? 'statePhJson' : 'statePhText');
+  updatePreview();
+}
+
+function errorOf(e) {
+  if (e instanceof I18nError) return { k: e.k, p: e.p };
+  if (e instanceof SyntaxError) return { k: 'jsonSyntax', p: { m: e.message } };
+  return { k: 'unexpected', p: { m: e.message } };
+}
+
+// JSON タブの内容をフォームへ反映する。失敗したら false。
+function applySchemaJson() {
+  try {
+    app.questions = fromApiQuestions(JSON.parse($('#schemaJson').value));
+    $('#schemaJson').classList.remove('invalid');
+    return true;
+  } catch (e) {
+    $('#schemaJson').classList.add('invalid');
+    showErrors([errorOf(e)]);
+    return false;
+  }
+}
+
+function setSchemaTab(tab) {
+  if (tab === app.schemaTab) return;
+  if (tab === 'json') {
+    $('#schemaJson').value = JSON.stringify(toApiQuestions(app.questions), null, 2);
+  } else if (!applySchemaJson()) {
+    return; // 不正な JSON のまま JSON タブに留まる
+  }
+  app.schemaTab = tab;
+  showErrors([]);
+  renderSchemaTab();
+}
+
+function renderSchemaTab() {
+  document.querySelectorAll('#schemaTab button').forEach((b) => b.classList.toggle('on', b.dataset.tab === app.schemaTab));
+  $('#formView').hidden = app.schemaTab !== 'form';
+  $('#jsonView').hidden = app.schemaTab !== 'json';
+  if (app.schemaTab === 'form') renderQuestions();
+  updatePreview();
+}
+
+function loadInputs({ stateMode, state, questions }) {
+  $('#state').value = state;
+  $('#state').classList.remove('invalid');
+  $('#schemaJson').classList.remove('invalid');
+  app.questions = fromApiQuestions(questions);
+  $('#schemaJson').value = JSON.stringify(questions, null, 2);
+  showErrors([]);
+  setStateMode(stateMode);
+  renderSchemaTab();
+}
+
+// ---------- リクエスト ----------
+
+const baseUrl = () => $('#baseUrl').value.trim().replace(/\/+$/, '');
+
+function buildRequest() {
+  const raw = $('#state').value;
+  let state = raw;
+  if (app.stateMode === 'json') {
+    try { state = JSON.parse(raw); } catch (e) { throw new I18nError('stateJson', { m: e.message }); }
+  }
+  const questions = app.schemaTab === 'json' ? JSON.parse($('#schemaJson').value) : toApiQuestions(app.questions);
+  return { model: $('#model').value, state, questions };
+}
+
+function updatePreview() {
+  let text;
+  try {
+    const body = JSON.stringify(buildRequest(), null, 2).replace(/'/g, `'\\''`);
+    text = `curl ${baseUrl()}/v1/systemone -d '${body}'`;
+  } catch (e) {
+    const { k, p } = errorOf(e);
+    text = t('previewFail', { m: t(k, p) });
+  }
+  $('#preview').textContent = text;
+}
+
+function httpError(status, m, model) {
+  if (status === 404 && /not found/i.test(m)) return ['modelNotFound', { model, m }];
+  if (status === 400) return ['badRequest', { m }];
+  if (status >= 500) return ['serverError', { s: status, m }];
+  return ['httpOther', { s: status, m }];
+}
+
+async function run() {
+  if (app.busy) return;
+  if (app.schemaTab === 'json' && !applySchemaJson()) return;
+  const errs = validate();
+  // JSON タブ表示中はフォームの要素が無いので、赤枠は付けずにメッセージだけ出す
+  showErrors(app.schemaTab === 'form' ? errs : errs.map(({ k, p }) => ({ k, p })));
+  if (errs.length) return;
+
+  let req;
+  try { req = buildRequest(); } catch (e) { $('#state').classList.add('invalid'); showErrors([errorOf(e)]); return; }
+  $('#state').classList.remove('invalid');
+
+  const ctrl = new AbortController();
+  setBusy(ctrl);
+  setView(() => `<p class="muted">${esc(t('running', { model: req.model }))}</p>`);
+  const url = baseUrl();
+  const t0 = performance.now();
+  try {
+    let res;
+    try {
+      res = await fetch(`${url}/v1/systemone`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(req),
+        signal: ctrl.signal,
+      });
+    } catch (e) {
+      if (e.name === 'AbortError') return renderError('aborted');
+      return renderConnectionError(url);
+    }
+    const text = await res.text();
+    const elapsedMs = Math.round(performance.now() - t0);
+    let data = null;
+    try { data = JSON.parse(text); } catch {}
+    if (!res.ok) return renderError(...httpError(res.status, data?.error || text || res.statusText, req.model));
+    if (!data || typeof data.answers !== 'object') return renderError('badShape', { m: text.slice(0, 2000) });
+
+    const entry = {
+      at: Date.now(), baseUrl: url, model: req.model,
+      stateMode: app.stateMode, stateText: $('#state').value,
+      questions: req.questions, response: data, elapsedMs,
+    };
+    setView(() => resultHtml(entry));
+    addHistory(entry);
+  } catch (e) {
+    renderError(e.name === 'AbortError' ? 'aborted' : 'unexpected', { m: e.message });
+  } finally {
+    setBusy(null);
+  }
+}
+
+function setBusy(ctrl) {
+  app.busy = ctrl;
+  $('#run').disabled = !!ctrl;
+  $('#cancel').hidden = !ctrl;
+}
+
+// ---------- 結果表示 ----------
+
+function setView(fn) {
+  app.view = fn;
+  $('#result').innerHTML = fn();
+}
+
+function renderError(k, p) {
+  setView(() => `<div class="error">${esc(t(k, p))}</div>`);
+}
+
+function renderConnectionError(url) {
+  const file = location.protocol === 'file:';
+  setView(() => `<div class="error">${esc(t('connFail', { url }) + t(file ? 'connFailFile' : 'connFailCors'))}</div>`);
+}
+
+function barRow(label, desc, p, top) {
+  return `<div class="bar${top ? ' top' : ''}">
+    <div class="lbl" title="${esc(desc ? `${label}: ${desc}` : label)}">${esc(label)}${desc ? `<small>${esc(desc)}</small>` : ''}</div>
+    <div class="track"><div class="fill" style="width:${(p * 100).toFixed(2)}%"></div></div>
+    <div class="pct">${pct(p)}</div>
+  </div>`;
+}
+
+function answerHtml(key, q, a) {
+  const head = (conf) => `<div class="ahead">
+      <span class="key">${esc(key)}</span><span class="type">${esc(q?.type ?? a?.type ?? '?')}</span>
+      <span class="conf">${t('confidence')} ${conf}</span>
+    </div>${q?.instructions ? `<div class="instr">${esc(q.instructions)}</div>` : ''}`;
+  if (!a) return `<div class="answer">${head('—')}<p class="muted">${t('noAnswer')}</p></div>`;
+  const conf = typeof a.confidence === 'number' ? `<b>${a.confidence.toFixed(3)}</b>` : t('confNone');
+
+  if (a.type === 'choice') {
+    const rows = Object.entries(a.probabilities || {}).sort((x, y) => y[1] - x[1]);
+    return `<div class="answer">${head(conf)}
+      ${rows.map(([k, p], i) => barRow(k, q?.criteria?.[k], p, i === 0)).join('')}</div>`;
+  }
+  if (a.type === 'score') {
+    const legend = a.legend || {};
+    const idx = Object.keys(a.probabilities || {}).map(Number).sort((x, y) => x - y);
+    const max = Math.max(...idx.map((i) => a.probabilities[i]));
+    const nearest = legend[Math.round(a.score)];
+    return `<div class="answer">${head(conf)}
+      <div class="summary">${t('expected')} <b>${a.score.toFixed(2)}</b> / ${idx.length - 1}${nearest ? ` (${esc(t('nearest', { l: nearest }))})` : ''}</div>
+      ${idx.map((i) => barRow(`${i} · ${legend[i] ?? ''}`, '', a.probabilities[i], a.probabilities[i] === max)).join('')}</div>`;
+  }
+  if (a.type === 'noul') {
+    const p = a.noul;
+    const rows = [[t('true'), q?.criteria?.true, p], [t('false'), q?.criteria?.false, 1 - p]].sort((x, y) => y[2] - x[2]);
+    return `<div class="answer">${head(t('confNoneNoul'))}
+      ${rows.map(([l, d, v], i) => barRow(l, d, v, i === 0)).join('')}</div>`;
+  }
+  return `<div class="answer">${head('—')}<pre>${esc(JSON.stringify(a, null, 2))}</pre></div>`;
+}
+
+const fmtDate = (ms) => new Date(ms).toLocaleString(lang === 'ja' ? 'ja-JP' : 'en-US');
+
+function resultHtml(entry) {
+  const { response: r, questions } = entry;
+  const keys = [...new Set([...Object.keys(questions), ...Object.keys(r.answers)])];
+  return `
+    <div class="meta">
+      <span>${t('elapsed')} <b>${entry.elapsedMs} ms</b></span>
+      <span>${t('model')} <b>${esc(r.model ?? entry.model)}</b></span>
+      ${r.usage ? `<span>input_tokens <b>${esc(r.usage.input_tokens)}</b></span>` : ''}
+      <span>${fmtDate(entry.at)}</span>
+    </div>
+    ${keys.map((k) => answerHtml(k, questions[k], r.answers[k])).join('')}`;
+}
+
+// ---------- 履歴 ----------
+
+function topAnswer(a) {
+  if (!a) return '?';
+  if (a.type === 'choice') return a.choice;
+  if (a.type === 'score') return a.legend?.[Math.round(a.score)] ?? a.score.toFixed(2);
+  if (a.type === 'noul') return a.noul >= 0.5 ? `${t('true')} ${pct(a.noul)}` : `${t('false')} ${pct(1 - a.noul)}`;
+  return '?';
+}
+
+function renderHistory() {
+  const list = store.get('history', []);
+  $('#history').innerHTML = list.map((h, i) => `
+    <li><button data-hi="${i}">
+      <div class="h1"><span>${fmtDate(h.at)}</span><span>${esc(h.model)}</span><span>${h.elapsedMs} ms</span></div>
+      <div class="h2">${esc(h.stateText.replace(/\s+/g, ' ').slice(0, 30))}</div>
+      <div class="h3">${esc(Object.entries(h.response.answers).map(([k, a]) => `${k}=${topAnswer(a)}`).join('  '))}</div>
+    </button></li>`).join('') || `<li class="muted">${esc(t('historyEmpty'))}</li>`;
+}
+
+function addHistory(entry) {
+  const list = [entry, ...store.get('history', [])].slice(0, HISTORY_MAX);
+  $('#historyNote').hidden = store.set('history', list);
+  renderHistory();
+}
+
+function restoreHistory(i) {
+  const h = store.get('history', [])[i];
+  if (!h) return;
+  if (app.models?.includes(h.model)) { $('#model').value = h.model; saveSettings(); }
+  loadInputs({ stateMode: h.stateMode, state: h.stateText, questions: h.questions });
+  setView(() => resultHtml(h));
+}
+
+// ---------- 接続状態・モデル一覧 ----------
+
+function saveSettings() {
+  store.set('settings', { baseUrl: baseUrl(), model: $('#model').value, lang });
+}
+
+function versionLess(a, b) {
+  const pa = a.split(/[.-]/).map(Number), pb = b.split(/[.-]/).map(Number);
+  for (let i = 0; i < 3; i++) if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) < (pb[i] || 0);
+  return false;
+}
+
+function renderStatus() {
+  $('#status').className = app.status.cls;
+  $('#status').textContent = t(app.status.k, app.status.p);
+}
+
+function renderModelOptions(preferred) {
+  const sel = $('#model');
+  const models = app.models || [];
+  sel.innerHTML = models.length
+    ? models.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('')
+    : `<option value="">${esc(t(app.models ? 'modelsNone' : 'modelsUnknown'))}</option>`;
+  const pick = [preferred, ...models.filter((n) => n.startsWith('clef-flash'))].find((n) => models.includes(n));
+  if (pick) sel.value = pick;
+}
+
+async function checkStatus() {
+  app.status = { cls: '', k: 'checking', p: {} };
+  renderStatus();
+  const url = baseUrl();
+  const preferred = $('#model').value || store.get('settings', {}).model;
+  try {
+    const get = async (p) => (await fetch(url + p, { signal: AbortSignal.timeout(5000) })).json();
+    const [{ version }, { models }] = await Promise.all([get('/api/version'), get('/api/tags')]);
+    // 判断モデルは capabilities が decision になる (Ollama 0.35.1 以降)
+    app.models = (models || []).filter((m) => m.capabilities?.includes('decision')).map((m) => m.name).sort();
+    app.status = versionLess(version, MIN_VERSION)
+      ? { cls: 'warn', k: 'connOld', p: { v: version, min: MIN_VERSION } }
+      : { cls: 'ok', k: 'connOk', p: { v: version } };
+  } catch {
+    app.models = null;
+    app.status = { cls: 'err', k: 'connFailShort', p: { url } };
+  }
+  renderStatus();
+  renderModelOptions(preferred);
+  updatePreview();
+}
+
+// ---------- 言語 ----------
+
+function renderPresets() {
+  $('#presets').innerHTML = PRESETS[lang].map((p, i) => `<button data-pi="${i}">${esc(p.name)}</button>`).join('');
+}
+
+function setLang(l) {
+  lang = l;
+  document.documentElement.lang = l;
+  document.querySelectorAll('#lang button').forEach((b) => b.classList.toggle('on', b.dataset.lang === l));
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
+  renderPresets();
+  setStateMode(app.stateMode);
+  if (app.schemaTab === 'form') renderQuestions();
+  renderErrors();
+  renderStatus();
+  renderHistory();
+  if (!app.models?.length) renderModelOptions();
+  setView(app.view || (() => `<p class="muted">${esc(t('resultEmpty'))}</p>`));
+}
+
+// ---------- 初期化 ----------
+
+function init() {
+  if (location.protocol === 'file:') $('#fileBanner').hidden = false;
+
+  const s = store.get('settings', {});
+  $('#baseUrl').value = s.baseUrl || 'http://127.0.0.1:11434';
+  setLang(s.lang === 'en' ? 'en' : 'ja');
+
+  $('#lang').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-lang]');
+    if (b) { setLang(b.dataset.lang); saveSettings(); }
+  });
+  $('#presets').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-pi]');
+    if (b) loadInputs(PRESETS[lang][+b.dataset.pi]);
+  });
+  $('#baseUrl').addEventListener('change', () => { saveSettings(); checkStatus(); });
+  $('#model').addEventListener('change', () => { saveSettings(); updatePreview(); });
+  $('#stateMode').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setStateMode(b.dataset.mode); });
+  $('#schemaTab').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setSchemaTab(b.dataset.tab); });
+  $('#state').addEventListener('input', () => { $('#state').classList.remove('invalid'); updatePreview(); });
+  $('#schemaJson').addEventListener('input', () => { $('#schemaJson').classList.remove('invalid'); updatePreview(); });
+  $('#questions').addEventListener('input', onQuestionInput);
+  $('#questions').addEventListener('click', onQuestionClick);
+  $('#addQ').addEventListener('click', () => { app.questions.push(newQuestion()); renderQuestions(); updatePreview(); });
+  $('#run').addEventListener('click', run);
+  $('#cancel').addEventListener('click', () => app.busy?.abort());
+  $('#copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText($('#preview').textContent); $('#copy').textContent = t('copied'); }
+    catch { $('#copy').textContent = t('copyFailed'); }
+    setTimeout(() => { $('#copy').textContent = t('copy'); }, 1500);
+  });
+  $('#history').addEventListener('click', (e) => { const b = e.target.closest('button[data-hi]'); if (b) restoreHistory(+b.dataset.hi); });
+  $('#clearHistory').addEventListener('click', () => { store.set('history', []); renderHistory(); });
+
+  loadInputs(PRESETS[lang][0]);
+  renderHistory();
+  checkStatus();
+}
+
+init();
+</script>
+</body>
+</html>
