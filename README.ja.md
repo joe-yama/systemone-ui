@@ -2,7 +2,7 @@
 
 [English](README.md) | 日本語
 
-Ollama の SystemOne 系判断モデル (clef-flash 9B、clef 27B など) を試すための、ローカルで動く簡易 UI です。
+Ollama の SystemOne 系判断モデル (clef、clef-flash、nimble、tev1 など) を試すための、ローカルで動く簡易 UI です。
 チャットモデルではありません。`/v1/systemone` に状態と型付きの質問を渡すと、選択肢ごとの確率が返ります。
 
 `index.html` 1 ファイルで動きます (ビルド不要・依存なし)。UI は日本語と英語に対応しています。
@@ -12,7 +12,7 @@ Ollama の SystemOne 系判断モデル (clef-flash 9B、clef 27B など) を試
 ## 必要なもの
 
 - Ollama 0.35.1 以上
-- 判断モデル: `ollama pull clef-flash` (または `clef`)
+- 判断モデル: `ollama pull <model>` ([一覧](https://ollama.com/search?c=decision))
 
 ## 起動手順
 
@@ -56,7 +56,7 @@ docker compose up -d --build     # 停止: docker compose down
 ```jsonc
 // POST /v1/systemone
 {
-  "model": "clef-flash",
+  "model": "<model>",
   "state": "テキスト、または JSON オブジェクト/配列",
   "questions": {
     "team":     { "type": "choice", "instructions": "...", "criteria": { "billing": "...", "technical": "..." } },
@@ -66,7 +66,7 @@ docker compose up -d --build     # 停止: docker compose down
 }
 ```
 
-ドキュメント: [ollama.com/library/clef-flash](https://ollama.com/library/clef-flash)
+ドキュメント: [docs.ollama.com/api/systemone](https://docs.ollama.com/api/systemone)
 
 ## ライセンス
 

@@ -283,7 +283,7 @@ const I18N = {
     choiceKeyDup: '「{q}」: 選択肢キー「{k}」が重複しています。', choiceDescEmpty: '「{q}」: 選択肢 {n} の説明が空です。',
     levelCount: '「{q}」: 基準は 2〜26 段階にしてください。', levelEmpty: '「{q}」: 基準 {n} が空です。',
     noulPair: '「{q}」: 真偽の説明は両方入力するか、両方空にしてください。',
-    noModel: '判断モデルが選択されていません。ターミナルで ollama pull clef-flash などを実行して取得してください。',
+    noModel: '判断モデルが選択されていません。ターミナルで ollama pull <model> を実行して取得してください (一覧: https://ollama.com/search?c=decision)。',
     jsonSyntax: 'JSON の構文エラー: {m}', stateJson: '状態の JSON が不正です: {m}',
     qsNotObject: 'questions は { "キー": {...} } 形式のオブジェクトにしてください。',
     qNotObject: '「{q}」の値がオブジェクトではありません。',
@@ -329,7 +329,7 @@ const I18N = {
     choiceKeyDup: '"{q}": duplicate option key "{k}".', choiceDescEmpty: '"{q}": option {n} has no description.',
     levelCount: '"{q}": use 2–26 levels.', levelEmpty: '"{q}": level {n} is empty.',
     noulPair: '"{q}": fill in both true/false descriptions or leave both empty.',
-    noModel: 'No decision model selected. Pull one first, e.g. ollama pull clef-flash.',
+    noModel: 'No decision model selected. Pull one first: ollama pull <model> (list: https://ollama.com/search?c=decision).',
     jsonSyntax: 'JSON syntax error: {m}', stateJson: 'State JSON is invalid: {m}',
     qsNotObject: 'questions must be an object like { "key": {...} }.',
     qNotObject: 'The value of "{q}" is not an object.',
@@ -926,8 +926,7 @@ function renderModelOptions(preferred) {
   sel.innerHTML = models.length
     ? models.map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join('')
     : `<option value="">${esc(t(app.models ? 'modelsNone' : 'modelsUnknown'))}</option>`;
-  const pick = [preferred, ...models.filter((n) => n.startsWith('clef-flash'))].find((n) => models.includes(n));
-  if (pick) sel.value = pick;
+  if (models.includes(preferred)) sel.value = preferred;
 }
 
 async function checkStatus() {

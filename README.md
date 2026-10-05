@@ -2,7 +2,7 @@
 
 English | [日本語](README.ja.md)
 
-A minimal local UI for Ollama's SystemOne decision models (clef-flash 9B, clef 27B, etc.).
+A minimal local UI for Ollama's SystemOne decision models (clef, clef-flash, nimble, tev1, etc.).
 These are not chat models: you send a state and typed questions to `/v1/systemone` and get back a probability for each option.
 
 A single `index.html`, no build step, no dependencies. UI in Japanese and English.
@@ -12,7 +12,7 @@ A single `index.html`, no build step, no dependencies. UI in Japanese and Englis
 ## Requirements
 
 - Ollama 0.35.1 or later
-- A decision model: `ollama pull clef-flash` (or `clef`)
+- A decision model: `ollama pull <model>` ([list](https://ollama.com/search?c=decision))
 
 ## Getting started
 
@@ -56,7 +56,7 @@ Remote Ollama: on that host, set `OLLAMA_HOST=0.0.0.0` and `OLLAMA_ORIGINS=http:
 ```jsonc
 // POST /v1/systemone
 {
-  "model": "clef-flash",
+  "model": "<model>",
   "state": "text, or a JSON object/array",
   "questions": {
     "team":     { "type": "choice", "instructions": "...", "criteria": { "billing": "...", "technical": "..." } },
@@ -66,7 +66,7 @@ Remote Ollama: on that host, set `OLLAMA_HOST=0.0.0.0` and `OLLAMA_ORIGINS=http:
 }
 ```
 
-Docs: [ollama.com/library/clef-flash](https://ollama.com/library/clef-flash)
+Docs: [docs.ollama.com/api/systemone](https://docs.ollama.com/api/systemone)
 
 ## License
 
